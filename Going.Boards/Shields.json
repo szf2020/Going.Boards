@@ -1,0 +1,14 @@
+﻿[
+  {
+    "Name": "SD8I",
+    "Description": "입력 8점"
+  },
+  {
+    "Name": "SD8IR",
+    "Description": "입력 4점 / 출력(R) 4점"
+  },
+  {
+    "Name": "SD8R",
+    "Description": "출력(R) 8점"
+  }
+]
