@@ -1,14 +1,63 @@
 ﻿[
   {
+    "SID": "4d783338-645a-46c5-9849-3fb683f99f2a",
     "Name": "SD8I",
-    "Description": "입력 8점"
+    "Description": "입력 8점",
+    "GPInput": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "GPOutput": null,
+    "ExInputCount": 0,
+    "ExOuputCount": 0,
+    "ExADCount": 0,
+    "ExDACount": 0
   },
   {
-    "Name": "SD8IR",
-    "Description": "입력 4점 / 출력 4점"
-  },
-  {
+    "SID": "d4a4e28b-dcd3-4b97-b756-b22f024a5cc5",
     "Name": "SD8R",
-    "Description": "출력 8점"
+    "Description": "출력 8점",
+    "GPInput": null,
+    "GPOutput": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "ExInputCount": 0,
+    "ExOuputCount": 0,
+    "ExADCount": 0,
+    "ExDACount": 0
+  },
+  {
+    "SID": "6d35a6b2-2454-4b7f-9f98-9cfa1fcbfc6a",
+    "Name": "SD8IR",
+    "Description": "입력 4점 / 출력 4점",
+    "GPInput": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "GPOutput": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "ExInputCount": 0,
+    "ExOuputCount": 0,
+    "ExADCount": 0,
+    "ExDACount": 0
   }
 ]
