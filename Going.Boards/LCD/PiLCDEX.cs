@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Unosquare.RaspberryIO.Abstractions;
 using Unosquare.RaspberryIO;
 using Going.Boards.Interfaces;
+using Going.Boards.Chips;
+using System.Diagnostics;
 
 namespace Going.Boards.LCD
 {
@@ -19,11 +21,16 @@ namespace Going.Boards.LCD
         #region Member Variable
         IGpioPin[] Outs = new IGpioPin[5];
         IGpioPin[] Ins = new IGpioPin[4];
+
+        //MCP4725 Dev;
+
         #endregion
 
         #region Constructor
         public PiLCDEX()
         {
+            //Dev = new MCP4725(0x60);
+            
             Ins[0] = Pi.Gpio[P1.Pin38]; Ins[0].PinMode = GpioPinDriveMode.Input;
             Ins[1] = Pi.Gpio[P1.Pin40]; Ins[1].PinMode = GpioPinDriveMode.Input;
             Ins[2] = Pi.Gpio[P1.Pin15]; Ins[2].PinMode = GpioPinDriveMode.Input;
@@ -35,7 +42,9 @@ namespace Going.Boards.LCD
             Outs[3] = Pi.Gpio[P1.Pin33]; Outs[3].PinMode = GpioPinDriveMode.Output;
 
             Outs[4] = Pi.Gpio[P1.Pin22]; Outs[4].PinMode = GpioPinDriveMode.Output;
+
         }
+
         #endregion
 
         #region Method
@@ -60,11 +69,16 @@ namespace Going.Boards.LCD
         }
         #endregion
 
+
         #region Out
         public override void Out()
         {
             for (int i = 0; i < 5; i++)
                 Outs[i].Write(Output[i]);
+
+
+            //Dev.WriteData();
+
         }
         #endregion
 

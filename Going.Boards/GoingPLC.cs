@@ -18,6 +18,12 @@ namespace Going.Boards
 
         public GoingPLC()
         {
+            try
+            {
+                Pi.Init<BootstrapWiringPi>();
+            }
+            catch { }
+
             #region Communication
             comm = new TextCommTCPSlave { DisconnectCheckTime = 3000 };
             comm.Start();
@@ -63,13 +69,9 @@ namespace Going.Boards
         #region Initialize
         public void Initialize()
         {
-            try
-            {
-                Pi.Init<BootstrapWiringPi>();
-            }
-            catch { }
-
+            
             foreach (var v in Boards) v.Begin();
+
         }
         #endregion
         #endregion
