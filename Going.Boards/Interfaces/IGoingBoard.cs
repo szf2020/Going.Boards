@@ -1,4 +1,6 @@
 ﻿using Devinno.PLC.Ladder;
+using Going.Boards.LCD;
+using System;
 using System.Collections.Generic;
 
 namespace Going.Boards.Interfaces
@@ -7,29 +9,32 @@ namespace Going.Boards.Interfaces
     {
         bool[] Input { get; }
         bool[] Output { get; }
+        ushort[] DAOUT { get; }
 
         Dictionary<int, string> InputMap { get; }
         Dictionary<int, string> OutputMap { get; }
 
+        void Begin();
         void Load();
         void Out();
-        void Begin();
-
+        
         void InputMapping(LadderEngine engine);
         void OutputMapping(LadderEngine engine);
+        void DAOutput(LadderEngine engine);
     }
 
     public abstract class GoingBoard : IGoingBoard
     {
         public abstract bool[] Input { get; }
         public abstract bool[] Output { get; }
+        public abstract ushort[] DAOUT { get; }
 
         public Dictionary<int, string> InputMap { get; } = new Dictionary<int, string>();
         public Dictionary<int, string> OutputMap { get; } = new Dictionary<int, string>();
 
         public abstract void Begin();
         public abstract void Load();
-        public abstract void Out();
+        public abstract void Out();        
 
         public void InputMapping(LadderEngine engine)
         {
@@ -61,6 +66,11 @@ namespace Going.Boards.Interfaces
                 }
             }
         }
-    }
 
+        public void DAOutput(LadderEngine engine)
+        {
+            var v = engine.D[100] & 0x0fff;
+            DAOUT[0] = (ushort)v;
+        }
+    }
 }

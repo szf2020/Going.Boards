@@ -8,6 +8,9 @@ using Unosquare.RaspberryIO;
 using Going.Boards.Interfaces;
 using Going.Boards.Chips;
 using System.Diagnostics;
+using Unosquare.WiringPi;
+using Devinno.PLC.Ladder;
+using System.Runtime.CompilerServices;
 
 namespace Going.Boards.LCD
 {
@@ -16,21 +19,25 @@ namespace Going.Boards.LCD
         #region Properties
         public override bool[] Input { get; } = new bool[4];
         public override bool[] Output { get; } = new bool[5];
+        public override ushort[] DAOUT { get; } = new ushort[1];
         #endregion
 
         #region Member Variable
         IGpioPin[] Outs = new IGpioPin[5];
         IGpioPin[] Ins = new IGpioPin[4];
 
-        //MCP4725 Dev;
+        ushort Olddata;
 
+        MCP4725 Dev;
+        
+        public ushort DAOutValue;
         #endregion
 
         #region Constructor
         public PiLCDEX()
         {
-            //Dev = new MCP4725(0x60);
-            
+            Dev = new MCP4725(0x60);
+
             Ins[0] = Pi.Gpio[P1.Pin38]; Ins[0].PinMode = GpioPinDriveMode.Input;
             Ins[1] = Pi.Gpio[P1.Pin40]; Ins[1].PinMode = GpioPinDriveMode.Input;
             Ins[2] = Pi.Gpio[P1.Pin15]; Ins[2].PinMode = GpioPinDriveMode.Input;
@@ -40,9 +47,8 @@ namespace Going.Boards.LCD
             Outs[1] = Pi.Gpio[P1.Pin31]; Outs[1].PinMode = GpioPinDriveMode.Output;
             Outs[2] = Pi.Gpio[P1.Pin32]; Outs[2].PinMode = GpioPinDriveMode.Output;
             Outs[3] = Pi.Gpio[P1.Pin33]; Outs[3].PinMode = GpioPinDriveMode.Output;
-
             Outs[4] = Pi.Gpio[P1.Pin22]; Outs[4].PinMode = GpioPinDriveMode.Output;
-
+            
         }
 
         #endregion
@@ -53,6 +59,7 @@ namespace Going.Boards.LCD
         {
             Load();
             Out();
+            
         }
 
         public void Begin(byte in_byte, byte out_byte)
@@ -76,11 +83,15 @@ namespace Going.Boards.LCD
             for (int i = 0; i < 5; i++)
                 Outs[i].Write(Output[i]);
 
-
-            //Dev.WriteData();
-
+            if(Olddata != DAOUT[0])
+            {   
+                Dev.WriteData(DAOUT[0]);
+                Olddata = DAOUT[0];
+            }
+            
         }
         #endregion
+
 
         #endregion
     }

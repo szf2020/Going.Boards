@@ -18,11 +18,7 @@ namespace Going.Boards
 
         public GoingPLC()
         {
-            try
-            {
-                Pi.Init<BootstrapWiringPi>();
-            }
-            catch { }
+            Pi.Init<BootstrapWiringPi>();
 
             #region Communication
             comm = new TextCommTCPSlave { DisconnectCheckTime = 3000 };
@@ -50,7 +46,7 @@ namespace Going.Boards
                 foreach (var v in Boards)
                 {
                     v.Load();
-                    v.InputMapping(this);
+                    v.InputMapping(this);                    
                 }
             };
 
@@ -59,6 +55,7 @@ namespace Going.Boards
                 foreach (var v in Boards)
                 {
                     v.OutputMapping(this);
+                    v.DAOutput(this);
                     v.Out();
                 }
             };
@@ -69,9 +66,7 @@ namespace Going.Boards
         #region Initialize
         public void Initialize()
         {
-            
-            foreach (var v in Boards) v.Begin();
-
+            foreach (var v in Boards) v.Begin();            
         }
         #endregion
         #endregion

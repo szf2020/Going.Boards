@@ -9,6 +9,7 @@ namespace Going.Boards
         #region Properties
         public override bool[] Input { get; } = new bool[8];
         public override bool[] Output { get; } = new bool[8];
+        public override ushort[] DAOUT { get; } = new ushort[1];
         #endregion
 
         #region Member Variable

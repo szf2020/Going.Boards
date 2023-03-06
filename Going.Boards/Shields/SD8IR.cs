@@ -9,6 +9,7 @@ namespace Going.Boards
         #region Properties
         public override bool[] Input { get; } = new bool[4];
         public override bool[] Output { get; } = new bool[4];
+        public override ushort[] DAOUT { get; } = new ushort[1];
         #endregion
 
         #region Member Variable
@@ -60,7 +61,7 @@ namespace Going.Boards
                 Outs[i].Write(Output[i]);
         }
         #endregion
-
+        
         #endregion
     }
 }
