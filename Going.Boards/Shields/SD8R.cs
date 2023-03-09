@@ -33,27 +33,22 @@ namespace Going.Boards
 
         #region Method
         #region Begin
-        public override void Begin()
+        public override void Begin(GoingPLC engine)
         {
-            Load();
-            Out();
-        }
-
-        public void Begin(byte in_byte, byte out_byte)
-        {
-            Begin();
+            Load(engine);
+            Out(engine);
         }
         #endregion
 
         #region Load
-        public override void Load()
+        public override void Load(GoingPLC engine)
         {
 
         }
         #endregion
 
         #region Out
-        public override void Out()
+        public override void Out(GoingPLC engine)
         {
             for (int i = 0; i < 8; i++)
                 Outs[i].Write(Output[i]);

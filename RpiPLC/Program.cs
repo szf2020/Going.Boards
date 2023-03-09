@@ -18,15 +18,16 @@ namespace RpiPLC
                 LCDEX.OutputMap.Add(i, "P" + (i + 11));
             }
             engine.Boards.Add(LCDEX);
-            engine.Initialize();
             engine.Start();
             
             Console.WriteLine("Ladder Engine Start");
-
+            
             while (true)
             {
                 System.Threading.Thread.Sleep(10);
             }
+
+            //engine.UnInitialize();
         }
 
     }

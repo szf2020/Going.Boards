@@ -14,13 +14,12 @@ namespace Going.Boards.Interfaces
         Dictionary<int, string> InputMap { get; }
         Dictionary<int, string> OutputMap { get; }
 
-        void Begin();
-        void Load();
-        void Out();
+        void Begin(GoingPLC engine);
+        void Load(GoingPLC engine);
+        void Out(GoingPLC engine);
         
-        void InputMapping(LadderEngine engine);
-        void OutputMapping(LadderEngine engine);
-        void DAOutput(LadderEngine engine);
+        void InputMapping(GoingPLC engine);
+        void OutputMapping(GoingPLC engine);
     }
 
     public abstract class GoingBoard : IGoingBoard
@@ -32,11 +31,11 @@ namespace Going.Boards.Interfaces
         public Dictionary<int, string> InputMap { get; } = new Dictionary<int, string>();
         public Dictionary<int, string> OutputMap { get; } = new Dictionary<int, string>();
 
-        public abstract void Begin();
-        public abstract void Load();
-        public abstract void Out();        
+        public abstract void Begin(GoingPLC engine);
+        public abstract void Load(GoingPLC engine);
+        public abstract void Out(GoingPLC engine);
 
-        public void InputMapping(LadderEngine engine)
+        public void InputMapping(GoingPLC engine)
         {
             foreach (var index in InputMap.Keys)
             {
@@ -50,9 +49,11 @@ namespace Going.Boards.Interfaces
                     if (addr.StartsWith("M") && int.TryParse(addr.Substring(1), out idx) && idx >= 0 && idx < engine.M.Size) engine.M[idx] = value;
                 }
             }
+            var v = engine.D[100] & 0x0fff;
+            DAOUT[0] = (ushort)v;
         }
 
-        public void OutputMapping(LadderEngine engine)
+        public void OutputMapping(GoingPLC engine)
         {
             foreach (var index in OutputMap.Keys)
             {
@@ -65,12 +66,6 @@ namespace Going.Boards.Interfaces
                     if (addr.StartsWith("M") && int.TryParse(addr.Substring(1), out idx) && idx >= 0 && idx < engine.M.Size) Output[index] = engine.M[idx];
                 }
             }
-        }
-
-        public void DAOutput(LadderEngine engine)
-        {
-            var v = engine.D[100] & 0x0fff;
-            DAOUT[0] = (ushort)v;
         }
     }
 }

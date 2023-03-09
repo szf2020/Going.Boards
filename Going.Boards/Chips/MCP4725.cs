@@ -23,15 +23,18 @@ namespace Going.Boards.Chips
             }
             else
             {
-                dev = Pi.I2C.GetDeviceById(i2caddr);
+                dev = Pi.I2C.GetDeviceById(i2caddr); 
             }
         }
 
-        public void WriteData(ushort n)
+        public void WriteData(GoingPLC engine, ushort n)
         {
             var v = n & 0x0fff;
-            dev.WriteAddressByte(0, 0x40);
-            dev.WriteAddressByte((v & 0xff00) >> 8, Convert.ToByte(v & 0xff));            
+            //dev.WriteAddressByte(0, 0x40);
+            //dev.WriteAddressByte((v & 0xff00) >> 8, Convert.ToByte(v & 0xff));
+            //System.Threading.Thread.Sleep(5);
+            //Console.WriteLine($"D:{n}");
+            engine.I2C.Add(new I2cWork(dev, new byte[] { 0, 0x40, Convert.ToByte((v & 0xff00) >> 8), Convert.ToByte(v & 0xff) }));
         }        
     }
 }

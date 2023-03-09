@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unosquare.RaspberryIO.Abstractions;
-using Unosquare.RaspberryIO;
-using Going.Boards.Interfaces;
+﻿using Devinno.PLC.Ladder;
 using Going.Boards.Chips;
-using System.Diagnostics;
-using Unosquare.WiringPi;
-using Devinno.PLC.Ladder;
-using System.Runtime.CompilerServices;
+using Going.Boards.Interfaces;
+using Unosquare.RaspberryIO;
+using Unosquare.RaspberryIO.Abstractions;
+
 
 namespace Going.Boards.LCD
 {
@@ -18,19 +11,18 @@ namespace Going.Boards.LCD
     {
         #region Properties
         public override bool[] Input { get; } = new bool[4];
-        public override bool[] Output { get; } = new bool[5];
-        public override ushort[] DAOUT { get; } = new ushort[1];
+        public override bool[] Output { get; } = new bool[5];        
+        public override ushort[] DAOUT { get; } = new ushort[1];        
         #endregion
 
         #region Member Variable
         IGpioPin[] Outs = new IGpioPin[5];
         IGpioPin[] Ins = new IGpioPin[4];
 
-        ushort Olddata;
-
-        MCP4725 Dev;
-        
         public ushort DAOutValue;
+        ushort Olddata;
+        MCP4725 Dev;
+
         #endregion
 
         #region Constructor
@@ -48,50 +40,42 @@ namespace Going.Boards.LCD
             Outs[2] = Pi.Gpio[P1.Pin32]; Outs[2].PinMode = GpioPinDriveMode.Output;
             Outs[3] = Pi.Gpio[P1.Pin33]; Outs[3].PinMode = GpioPinDriveMode.Output;
             Outs[4] = Pi.Gpio[P1.Pin22]; Outs[4].PinMode = GpioPinDriveMode.Output;
-            
         }
 
         #endregion
 
         #region Method
         #region Begin
-        public override void Begin()
+        public override void Begin(GoingPLC engine)
         {
-            Load();
-            Out();
-            
+            Load(engine);
+            Out(engine);            
         }
 
-        public void Begin(byte in_byte, byte out_byte)
-        {
-            Begin();
-        }
         #endregion
 
         #region Load
-        public override void Load()
+        public override void Load(GoingPLC engine)
         {
             for (int i = 0; i < 4; i++)
                 Input[i] = Ins[i].Read();
         }
         #endregion
 
-
         #region Out
-        public override void Out()
+        public override void Out(GoingPLC engine)
         {
             for (int i = 0; i < 5; i++)
                 Outs[i].Write(Output[i]);
 
-            if(Olddata != DAOUT[0])
-            {   
-                Dev.WriteData(DAOUT[0]);
+            if (Olddata != DAOUT[0])
+            {
+                Dev.WriteData(engine, DAOUT[0]);
                 Olddata = DAOUT[0];
             }
-            
+
         }
         #endregion
-
 
         #endregion
     }
