@@ -6,7 +6,12 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
+    <Content Remove="C:\Users\hy752\.nuget\packages\devinno\1.1.0.8\contentFiles\any\net5.0\ico.png" />
     <Content Remove="C:\Users\ssmmo\.nuget\packages\devinno.plc\1.0.0.1\contentFiles\any\net5.0\ico.png" />
   </ItemGroup>
 

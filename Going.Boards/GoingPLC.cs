@@ -1,72 +1,71 @@
-﻿using Devinno.Communications.TextComm.TCP;
-using Devinno.Data;
+﻿using Devinno.Collections;
 using Devinno.PLC.Ladder;
-using Going.Boards.Interfaces;
+using Going.Boards.Shields;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
-using Unosquare.RaspberryIO;
-using Unosquare.RaspberryIO.Abstractions;
-using Unosquare.WiringPi;
+using System.Threading.Tasks;
 
 namespace Going.Boards
 {
     public class GoingPLC : LadderEngine
     {
-        #region Properties 
-        public List<IGoingBoard> Boards { get; } = new List<IGoingBoard>();
-        public I2cScheduler I2C { get; } = new I2cScheduler();
+        #region Properties
+        public EventList<GoingBoard> Shields { get; } = new EventList<GoingBoard>();
         #endregion
 
         #region Member Variable
-        TextCommTCPSlave comm;
-        
-       #endregion
+        Thread th;
+        #endregion
 
+        #region Constructor
         public GoingPLC()
         {
-            Pi.Init<BootstrapWiringPi>();
-
-            #region Communication
-            comm = new TextCommTCPSlave { DisconnectCheckTime = 3000 };
-            comm.Start();
-            comm.MessageRequest += (o, s) => {
-
-                if (s.Command == 10)
-                {
-                    try
-                    {
-                        var v = Serialize.JsonDeserialize<List<Shield>>(s.RequestMessage);
-                        if (v != null && v.Count > 0)
-                        {
-
-                        }
-                    }
-                    catch { }
-                }
-
+            #region Shields.Changed
+            Shields.Changed += (o, s) =>
+            {
+                foreach (var v in Shields) v.PLC = this;
             };
             #endregion
-           
-            I2C.Start();
+
+            #region Thread
+            th = new Thread(() => {
+
+                while (true)
+                {
+                    if(IsStart)
+                    {
+                        foreach (var v in Shields) v.Update();
+                    }
+                    Thread.Sleep(10);
+                }
+            
+            }) { IsBackground = true };
+            th.Start();
+            #endregion
         }
+        #endregion
 
         #region Override
         #region OnEngineStart
         public override void OnEngineStart()
         {
-            foreach (var v in Boards) v.Begin(this);
-            I2C.Start();
-
+            if (IsStart)
+            {
+                foreach (var v in Shields) v.Begin();
+            }
             base.OnEngineStart();
         }
         #endregion
         #region OnEngineStop
         public override void OnEngineStop()
         {
-            I2C.Stop();
-
+            if (IsStart)
+            {
+                foreach (var v in Shields) v.End();
+            }
             base.OnEngineStop();
         }
         #endregion
@@ -74,135 +73,23 @@ namespace Going.Boards
         #region OnDeviceLoad
         public override void OnDeviceLoad()
         {
-            //try
-            //{
-                foreach (var v in Boards)
-                {
-                    v.Load(this);
-                    v.InputMapping(this);
-                }
-            //}
-            //catch (Exception e) { File.AppendAllText("/home/pi/load.txt", DateTime.Now + " : " + e.Message + "\r\n" + e.StackTrace); }
-
+            if (IsStart)
+            {
+                foreach (var v in Shields) v.Load();
+            }
             base.OnDeviceLoad();
         }
         #endregion
-        #region OnDeviceOutput
+        #region OnDeviceOuput
         public override void OnDeviceOuput()
         {
-            //try
-            //{
-                foreach (var v in Boards)
-                {
-                    v.OutputMapping(this);
-                    v.Out(this);
-                }
-            //}
-            //catch (Exception e) { File.AppendAllText("/home/pi/out.txt", DateTime.Now + " : " + e.Message + "\r\n" + e.StackTrace); }
-
+            if (IsStart)
+            {
+                foreach (var v in Shields) v.Out();
+            }
             base.OnDeviceOuput();
         }
         #endregion
         #endregion
-
-
     }
-
-    class Shield
-    {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-    }
-
-    #region class : I2cWork
-    public class I2cWork
-    {
-        public II2CDevice Device { get; private set; }
-        public byte[] Data { get; private set; }
-
-        public I2cWork(II2CDevice Device, byte[] Data)
-        {
-            this.Device = Device;
-            this.Data = Data;
-        }
-    }
-    #endregion
-    #region class : I2cScheduler
-    public class I2cScheduler
-    {
-        #region Properties
-        public int Interval { get; set; } = 10;
-        #endregion
-
-        #region Member Variable
-        Queue<I2cWork> lsI2C = new Queue<I2cWork>();
-        Thread th;
-        bool bIsStart = false;
-        #endregion
-
-        #region Constructor
-        public I2cScheduler()
-        {
-
-        }
-        #endregion
-
-        #region Method
-        #region Add
-        public void Add(I2cWork w) => lsI2C.Enqueue(w);
-        #endregion
-        #region Start
-        public void Start()
-        {
-            if (!bIsStart)
-            {
-                th = new Thread(new ThreadStart(run)) { IsBackground = true };
-                th.Start();
-            }
-        }
-        #endregion
-        #region Stop
-        public void Stop()
-        {
-            bIsStart = false;
-        }
-        #endregion
-        #region run : Thread
-        void run()
-        {
-            bIsStart = true;
-            while(bIsStart)
-            {
-                if(lsI2C.Count > 0)
-                {
-                    var v = lsI2C.Dequeue();
-                    if (v.Device != null && v.Data != null)
-                    {
-                        
-                        for (int i = 0; i < v.Data.Length; i++)
-                        {
-                            Console.Write(v.Data[i].ToString("X2") + " ");
-                        }
-                        Console.WriteLine("");
-
-                        //v.Device.Write(v.Data);
-
-                        if (v.Data.Length % 2 == 0)
-                        {
-                            for (int i = 0; i < v.Data.Length; i += 2)
-                            {
-                                v.Device.WriteAddressByte(v.Data[i], v.Data[i + 1]);                                
-                            }
-                            
-                        }
-                        
-                    }
-                }
-                Thread.Sleep(Interval);
-            }
-        }
-        #endregion
-        #endregion
-    }
-    #endregion
 }

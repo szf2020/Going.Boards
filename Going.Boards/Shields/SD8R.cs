@@ -1,60 +1,96 @@
-﻿using Going.Boards.Interfaces;
+﻿using Devinno.PLC.Ladder;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Unosquare.RaspberryIO;
 using Unosquare.RaspberryIO.Abstractions;
 
-namespace Going.Boards
+namespace Going.Boards.Shields
 {
     public class SD8R : GoingBoard
     {
-        #region Properties
-        public override bool[] Input { get; } = new bool[8];
-        public override bool[] Output { get; } = new bool[8];
-        public override ushort[] DAOUT { get; } = new ushort[1];
+        #region Const
+        readonly P1[] PINS = { P1.Pin29, P1.Pin31, P1.Pin32, P1.Pin33, P1.Pin36, P1.Pin11, P1.Pin12, P1.Pin35 };
         #endregion
 
         #region Member Variable
-        IGpioPin[] Outs = new IGpioPin[8];
-        IGpioPin[] Ins = new IGpioPin[8];
+        IGpioPin[] OUT;
         #endregion
 
         #region Constructor
         public SD8R()
         {
-            Outs[0] = Pi.Gpio[P1.Pin29]; Outs[0].PinMode = GpioPinDriveMode.Output;
-            Outs[1] = Pi.Gpio[P1.Pin31]; Outs[1].PinMode = GpioPinDriveMode.Output;
-            Outs[2] = Pi.Gpio[P1.Pin32]; Outs[2].PinMode = GpioPinDriveMode.Output;
-            Outs[3] = Pi.Gpio[P1.Pin33]; Outs[3].PinMode = GpioPinDriveMode.Output;
-            Outs[4] = Pi.Gpio[P1.Pin36]; Outs[4].PinMode = GpioPinDriveMode.Output;
-            Outs[5] = Pi.Gpio[P1.Pin11]; Outs[5].PinMode = GpioPinDriveMode.Output;
-            Outs[6] = Pi.Gpio[P1.Pin12]; Outs[6].PinMode = GpioPinDriveMode.Output;
-            Outs[7] = Pi.Gpio[P1.Pin35]; Outs[7].PinMode = GpioPinDriveMode.Output;
+            Hardwares = new IHardware[8];
+            OUT = new IGpioPin[8];
+
+            for (int i = 0; i < 8; i++) Hardwares[i] = new HardwareOutput($"OUT{i}");
         }
         #endregion
 
-        #region Method
+        #region Override
         #region Begin
-        public override void Begin(GoingPLC engine)
+        public override void Begin()
         {
-            Load(engine);
-            Out(engine);
+            if (PLC != null)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    OUT[i] = Pi.Gpio[PINS[i]];
+                    OUT[i].PinMode = GpioPinDriveMode.Output;
+                }
+
+                Load();
+                Out();
+            }
+        }
+        #endregion
+        #region End
+        public override void End()
+        {
         }
         #endregion
 
         #region Load
-        public override void Load(GoingPLC engine)
+        public override void Load()
         {
-
+            
         }
         #endregion
-
         #region Out
-        public override void Out(GoingPLC engine)
+        public override void Out()
         {
-            for (int i = 0; i < 8; i++)
-                Outs[i].Write(Output[i]);
+            if (PLC != null)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    var v = Hardwares[i] as HardwareOutput;
+
+                    AddressInfo addr;
+                    if (AddressInfo.TryParse(v.Address, out addr))
+                    {
+                        if (addr.Code == "P" && addr.Index >= 0 && addr.Index < PLC.P.Size) v.Value = PLC.P[addr.Index];
+                        if (addr.Code == "M" && addr.Index >= 0 && addr.Index < PLC.M.Size) v.Value = PLC.M[addr.Index];
+                    }
+                }
+            }
         }
         #endregion
 
+        #region Update
+        public override void Update()
+        {
+            if (PLC != null)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    var v = Hardwares[i] as HardwareOutput;
+                    OUT[i].Value = v.Value;
+                }
+            }
+        }
+        #endregion
         #endregion
     }
 }
