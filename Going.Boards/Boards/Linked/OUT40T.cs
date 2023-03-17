@@ -1,31 +1,28 @@
-﻿using Devinno.PLC.Ladder;
+﻿using Devinno.Extensions;
+using Devinno.PLC.Ladder;
+using Going.Boards.Chips;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unosquare.RaspberryIO;
-using Unosquare.RaspberryIO.Abstractions;
 
-namespace Going.Boards.Shields
+namespace Going.Boards.Boards.Linked
 {
-    public class SD8R : GoingBoard
+    public class OUT40T : GoingBoard
     {
-        #region Const
-        readonly P1[] PINS = { P1.Pin29, P1.Pin31, P1.Pin32, P1.Pin33, P1.Pin36, P1.Pin11, P1.Pin12, P1.Pin35 };
-        #endregion
-
         #region Member Variable
-        IGpioPin[] OUT;
+        PCA9506 devO;
+        byte DeviceID;
         #endregion
 
         #region Constructor
-        public SD8R()
+        public OUT40T(byte DeviceID = 0x21)
         {
-            Hardwares = new IHardware[8];
-            OUT = new IGpioPin[8];
+            this.DeviceID = DeviceID;
 
-            for (int i = 0; i < 8; i++) Hardwares[i] = new HardwareOutput($"OUT{i}");
+            Hardwares = new IHardware[40];
+            for (int i = 0; i < 40; i++) Hardwares[i] = new HardwareOutput($"OUT{i}");
         }
         #endregion
 
@@ -35,11 +32,14 @@ namespace Going.Boards.Shields
         {
             if (PLC != null)
             {
-                for (int i = 0; i < 8; i++)
-                {
-                    OUT[i] = Pi.Gpio[PINS[i]];
-                    OUT[i].PinMode = GpioPinDriveMode.Output;
-                }
+                devO = new PCA9506(DeviceID);
+
+                devO.Setup();
+                devO.PortMode(PCA9506.Port.Port0, PCA9506.PinMode.OUTPUT);
+                devO.PortMode(PCA9506.Port.Port1, PCA9506.PinMode.OUTPUT);
+                devO.PortMode(PCA9506.Port.Port2, PCA9506.PinMode.OUTPUT);
+                devO.PortMode(PCA9506.Port.Port3, PCA9506.PinMode.OUTPUT);
+                devO.PortMode(PCA9506.Port.Port4, PCA9506.PinMode.OUTPUT);
 
                 Load();
                 Out();
@@ -55,7 +55,7 @@ namespace Going.Boards.Shields
         #region Load
         public override void Load()
         {
-            
+ 
         }
         #endregion
         #region Out
@@ -63,7 +63,7 @@ namespace Going.Boards.Shields
         {
             if (PLC != null && PLC.State == EngineState.RUN)
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 40; i++)
                 {
                     var v = Hardwares[i] as HardwareOutput;
 
@@ -83,11 +83,22 @@ namespace Going.Boards.Shields
         {
             if (PLC != null && PLC.State == EngineState.RUN)
             {
-                for (int i = 0; i < 8; i++)
+                byte[] values = new byte[5];
+                for (int i = 0; i < 40; i++)
                 {
                     var v = Hardwares[i] as HardwareOutput;
-                    if (OUT[i] != null) OUT[i].Value = v.Value;
+
+                    var idx = i / 8;
+                    var bit = i % 8;
+
+                    values[idx].Bit(bit, v.Value);
                 }
+
+                devO.WritePort(PCA9506.Port.Port0, values[0]);
+                devO.WritePort(PCA9506.Port.Port1, values[1]);
+                devO.WritePort(PCA9506.Port.Port2, values[2]);
+                devO.WritePort(PCA9506.Port.Port3, values[3]);
+                devO.WritePort(PCA9506.Port.Port4, values[4]);
             }
         }
         #endregion

@@ -3,6 +3,7 @@ using Devinno.PLC.Ladder;
 using Going.Boards.Shields;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,7 +22,6 @@ namespace Going.Boards
         #region Member Variable
         Thread th;
 
-        bool initialized = false;
         bool updatable = false;
         #endregion
 
@@ -48,10 +48,13 @@ namespace Going.Boards
                             {
                                 v.Update();
                             }
-                            catch { }
+                            catch (Exception ex)
+                            {
+                                File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory, $"{DateTime.Now} : {ex.Message}\r\n");
+                            }
                         }
                     }
-                    Thread.Sleep(10);
+                    Thread.Sleep(1);
                 }
             
             }) { IsBackground = true };
@@ -64,8 +67,6 @@ namespace Going.Boards
         #region OnEngineStart
         public override void OnEngineStart()
         {
-            if (!initialized) Pi.Init<BootstrapWiringPi>();
-
             if (IsStart)
             {
                 foreach (var v in Shields) v.Begin();

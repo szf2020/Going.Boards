@@ -22,11 +22,15 @@ namespace Going.Boards.Shields
         IGpioPin[] IN;
         IGpioPin[] OUT;
         MCP4725 MCP;
+
+        byte DeviceID;
         #endregion
 
         #region Constructor
-        public LcdEX()
+        public LcdEX(byte DeviceID = 0x60)
         {
+            this.DeviceID = DeviceID;
+
             Hardwares = new IHardware[10];
             for (int i = 0; i < 4; i++) Hardwares[i + 0] = new HardwareInput($"IN{i}");
             for (int i = 0; i < 5; i++) Hardwares[i + 4] = new HardwareOutput($"OUT{i}");
@@ -34,7 +38,6 @@ namespace Going.Boards.Shields
 
             IN = new IGpioPin[4];
             OUT = new IGpioPin[5];
-            MCP = new MCP4725(0x60);
         }
         #endregion
 
@@ -44,6 +47,9 @@ namespace Going.Boards.Shields
         {
             if (PLC != null)
             {
+                MCP = new MCP4725(DeviceID);
+                MCP.Setup();
+
                 for (int i = 0; i < 4; i++)
                 {
                     IN[i] = Pi.Gpio[PINS_I[i]];
@@ -58,8 +64,6 @@ namespace Going.Boards.Shields
 
                 Load();
                 Out();
-
-                MCP.Setup();
             }
         }
         #endregion
@@ -72,7 +76,7 @@ namespace Going.Boards.Shields
         #region Load
         public override void Load()
         {
-            if (PLC != null)
+            if (PLC != null && PLC.State == EngineState.RUN)
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -91,7 +95,7 @@ namespace Going.Boards.Shields
         #region Out
         public override void Out()
         {
-            if (PLC != null)
+            if (PLC != null && PLC.State == EngineState.RUN)
             {
                 for (int i = 0; i < 5; i++)
                 {
@@ -121,7 +125,7 @@ namespace Going.Boards.Shields
         #region Update
         public override void Update()
         {
-            if (PLC != null)
+            if (PLC != null && PLC.State == EngineState.RUN)
             {
                 for (int i = 0; i < 4; i++)
                 {

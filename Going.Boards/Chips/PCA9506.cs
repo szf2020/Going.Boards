@@ -8,7 +8,7 @@ using Unosquare.RaspberryIO.Abstractions;
 
 namespace Going.Boards.Chips
 {
-    internal class PCA9506
+    public class PCA9506
     {
         #region Member Variable
         II2CDevice dev;
@@ -20,7 +20,6 @@ namespace Going.Boards.Chips
         public PCA9506(byte devid)
         {
             i2caddr = devid;
-
             var v = Pi.I2C.Devices.Where(x => x.DeviceId == i2caddr).FirstOrDefault();
 
             if (v == null) dev = Pi.I2C.AddDevice(i2caddr);
@@ -47,7 +46,7 @@ namespace Going.Boards.Chips
                 WriteReg(Register.PI, Port.Port2, 0);
                 WriteReg(Register.PI, Port.Port3, 0);
                 WriteReg(Register.PI, Port.Port4, 0);
-
+                
                 //PortMode
                 PortMode(Port.Port0, PinMode.INPUT);
                 PortMode(Port.Port1, PinMode.INPUT);
@@ -61,14 +60,14 @@ namespace Going.Boards.Chips
         #region PortMode
         public void PortMode(Port port, PinMode mode)
         {
-            var v = (byte)(mode == PinMode.OUTPUT ? 0xFF : 0x00);
+            var v = (byte)(mode == PinMode.OUTPUT ? 0x00 : 0xFF);
             if (dev != null) WriteReg(Register.IOC, port, v);
         }
         #endregion
         #region WritePort
         public void WritePort(Port port, byte data)
         {
-            if (dev != null) WriteReg(Register.OP, port, data);
+            if (dev != null) WriteReg(Register.OP, port, Convert.ToByte(data ^ 0xFF));
         }
         #endregion
         #region ReadPort

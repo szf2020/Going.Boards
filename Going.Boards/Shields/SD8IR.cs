@@ -65,7 +65,7 @@ namespace Going.Boards.Shields
         #region Load
         public override void Load()
         {
-            if (PLC != null)
+            if (PLC != null && PLC.State == EngineState.RUN)
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -84,7 +84,7 @@ namespace Going.Boards.Shields
         #region Out
         public override void Out()
         {
-            if (PLC != null)
+            if (PLC != null && PLC.State == EngineState.RUN)
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -104,7 +104,7 @@ namespace Going.Boards.Shields
         #region Update
         public override void Update()
         {
-            if (PLC != null)
+            if (PLC != null && PLC.State == EngineState.RUN)
             {
                 for (int i = 0; i < 4; i++)
                 {

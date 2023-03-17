@@ -1,31 +1,28 @@
-﻿using Devinno.PLC.Ladder;
+﻿using Devinno.Extensions;
+using Devinno.PLC.Ladder;
+using Going.Boards.Chips;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unosquare.RaspberryIO;
-using Unosquare.RaspberryIO.Abstractions;
 
-namespace Going.Boards.Shields
+namespace Going.Boards.Boards.Linked
 {
-    public class SD8R : GoingBoard
+    public class OUT16CH : GoingBoard
     {
-        #region Const
-        readonly P1[] PINS = { P1.Pin29, P1.Pin31, P1.Pin32, P1.Pin33, P1.Pin36, P1.Pin11, P1.Pin12, P1.Pin35 };
-        #endregion
-
         #region Member Variable
-        IGpioPin[] OUT;
+        MCP23017 devO;
+        byte DeviceID;
         #endregion
 
         #region Constructor
-        public SD8R()
+        public OUT16CH(byte DeviceID = 0x21)
         {
-            Hardwares = new IHardware[8];
-            OUT = new IGpioPin[8];
+            this.DeviceID = DeviceID;
 
-            for (int i = 0; i < 8; i++) Hardwares[i] = new HardwareOutput($"OUT{i}");
+            Hardwares = new IHardware[16];
+            for (int i = 0; i < 16; i++) Hardwares[i] = new HardwareOutput($"OUT{i}");
         }
         #endregion
 
@@ -35,11 +32,11 @@ namespace Going.Boards.Shields
         {
             if (PLC != null)
             {
-                for (int i = 0; i < 8; i++)
-                {
-                    OUT[i] = Pi.Gpio[PINS[i]];
-                    OUT[i].PinMode = GpioPinDriveMode.Output;
-                }
+                devO = new MCP23017(DeviceID);
+
+                devO.Setup();
+                devO.PortMode(MCP23017.Port.A, MCP23017.PinMode.OUTPUT);
+                devO.PortMode(MCP23017.Port.B, MCP23017.PinMode.OUTPUT);
 
                 Load();
                 Out();
@@ -55,7 +52,7 @@ namespace Going.Boards.Shields
         #region Load
         public override void Load()
         {
-            
+
         }
         #endregion
         #region Out
@@ -63,7 +60,7 @@ namespace Going.Boards.Shields
         {
             if (PLC != null && PLC.State == EngineState.RUN)
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 16; i++)
                 {
                     var v = Hardwares[i] as HardwareOutput;
 
@@ -83,11 +80,19 @@ namespace Going.Boards.Shields
         {
             if (PLC != null && PLC.State == EngineState.RUN)
             {
-                for (int i = 0; i < 8; i++)
+                byte[] values = new byte[2];
+                for (int i = 0; i < 16; i++)
                 {
                     var v = Hardwares[i] as HardwareOutput;
-                    if (OUT[i] != null) OUT[i].Value = v.Value;
+
+                    var idx = i / 8;
+                    var bit = i % 8;
+
+                    values[idx].Bit(bit, v.Value);
                 }
+
+                devO.WritePort(MCP23017.Port.A, values[0]);
+                devO.WritePort(MCP23017.Port.B, values[1]);
             }
         }
         #endregion
