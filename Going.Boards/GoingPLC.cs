@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Unosquare.RaspberryIO;
+using Unosquare.WiringPi;
 
 namespace Going.Boards
 {
@@ -18,6 +20,9 @@ namespace Going.Boards
 
         #region Member Variable
         Thread th;
+
+        bool initialized = false;
+        bool updatable = false;
         #endregion
 
         #region Constructor
@@ -35,9 +40,16 @@ namespace Going.Boards
 
                 while (true)
                 {
-                    if(IsStart)
+                    if (IsStart && updatable)
                     {
-                        foreach (var v in Shields) v.Update();
+                        foreach (var v in Shields)
+                        {
+                            try
+                            {
+                                v.Update();
+                            }
+                            catch { }
+                        }
                     }
                     Thread.Sleep(10);
                 }
@@ -52,9 +64,12 @@ namespace Going.Boards
         #region OnEngineStart
         public override void OnEngineStart()
         {
+            if (!initialized) Pi.Init<BootstrapWiringPi>();
+
             if (IsStart)
             {
                 foreach (var v in Shields) v.Begin();
+                updatable = true;
             }
             base.OnEngineStart();
         }
@@ -64,6 +79,7 @@ namespace Going.Boards
         {
             if (IsStart)
             {
+                updatable = false;
                 foreach (var v in Shields) v.End();
             }
             base.OnEngineStop();

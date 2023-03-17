@@ -109,13 +109,13 @@ namespace Going.Boards.Shields
                 for (int i = 0; i < 4; i++)
                 {
                     var v = Hardwares[i] as HardwareInput;
-                    v.Value = IN[i].Value;
+                    if (IN[i] != null) v.Value = IN[i].Value;
                 }
 
                 for (int i = 0; i < 4; i++)
                 {
                     var v = Hardwares[i + 4] as HardwareOutput;
-                    OUT[i].Value = v.Value;
+                    if (OUT[i] != null) OUT[i].Value = v.Value;
                 }
             }
         }
