@@ -21,8 +21,9 @@ namespace Going.Boards.Boards.Linked
         {
             this.DeviceID = DeviceID;
 
-            Hardwares = new IHardware[40];
-            for (int i = 0; i < 40; i++) Hardwares[i] = new HardwareOutput($"OUT{i}");
+            var vs = new IHardware[40];
+            for (int i = 0; i < 40; i++) vs[i] = new HardwareOutput($"OUT{i}");
+            Hardwares = new HardwareList(vs);
         }
         #endregion
 

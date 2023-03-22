@@ -22,10 +22,11 @@ namespace Going.Boards.Shields
         #region Constructor
         public SD8I()
         {
-            Hardwares = new IHardware[8];
             IN = new IGpioPin[8];
 
-            for (int i = 0; i < 8; i++) Hardwares[i] = new HardwareInput($"IN{i}");
+            var vs = new IHardware[8];
+            for (int i = 0; i < 8; i++) vs[i] = new HardwareInput($"IN{i}");
+            Hardwares = new HardwareList(vs);
         }
         #endregion
 

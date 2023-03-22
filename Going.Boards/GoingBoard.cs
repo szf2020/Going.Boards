@@ -9,7 +9,7 @@ namespace Going.Boards
     public abstract class GoingBoard
     {
         public GoingPLC PLC { get; internal set; }
-        public IHardware[] Hardwares { get; protected set; }
+        public HardwareList Hardwares { get; protected set; }
 
         public abstract void Begin();
         public abstract void End();
@@ -71,6 +71,71 @@ namespace Going.Boards
         public int Value { get; set; }
 
         public HardwareADC(string Name) => this.Name = Name;
+    }
+    #endregion
+    #region class : HardwareList
+    public class HardwareList
+    {
+        #region Indexer
+        public IHardware this[int index] { get => vs[index]; }
+        public IHardware this[string name]
+        {
+            get
+            {
+                IHardware ret = null;
+                if (vs != null)
+                {
+                    var dic = vs.ToDictionary(x => x.Name);
+                    ret = dic[name];
+                }
+                return ret;
+            }
+        }
+        #endregion
+
+        #region Properties
+        public int Count => (vs != null ? vs.Length : 0);
+        #endregion
+
+        #region Member Variable
+        IHardware[] vs = null;
+        #endregion
+
+        #region Constructor
+        public HardwareList(IHardware[] vs)
+        {
+            this.vs = vs;
+        }
+        #endregion
+
+        #region Method
+        #region ContainsName
+        public bool ContainsName(string name)
+        {
+            bool ret = false;
+            if(vs != null)
+            {
+                var dic = vs.ToDictionary(x => x.Name);
+                ret = dic.ContainsKey(name);
+            }
+            return ret;
+        }
+        #endregion
+        #region Contains
+        public bool Contains(IHardware hardware)
+        {
+            bool ret = false;
+            if(vs != null)
+            {
+                ret = vs.Contains(hardware);
+            }
+            return ret;
+        }
+        #endregion
+        #region ToArray
+        public IHardware[] ToArray() => vs;
+        #endregion
+        #endregion
     }
     #endregion
 }

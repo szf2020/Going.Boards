@@ -31,10 +31,11 @@ namespace Going.Boards.Shields
         {
             this.DeviceID = DeviceID;
 
-            Hardwares = new IHardware[10];
-            for (int i = 0; i < 4; i++) Hardwares[i + 0] = new HardwareInput($"IN{i}");
-            for (int i = 0; i < 5; i++) Hardwares[i + 4] = new HardwareOutput($"OUT{i}");
-            Hardwares[9] = new HardwareDAC($"DAC0");
+            var vs = new IHardware[10];
+            for (int i = 0; i < 4; i++) vs[i + 0] = new HardwareInput($"IN{i}");
+            for (int i = 0; i < 5; i++) vs[i + 4] = new HardwareOutput($"OUT{i}");
+            vs[9] = new HardwareDAC($"DAC0");
+            Hardwares = new HardwareList(vs);
 
             IN = new IGpioPin[4];
             OUT = new IGpioPin[5];

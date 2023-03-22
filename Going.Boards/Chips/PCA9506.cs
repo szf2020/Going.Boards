@@ -8,7 +8,7 @@ using Unosquare.RaspberryIO.Abstractions;
 
 namespace Going.Boards.Chips
 {
-    public class PCA9506
+    internal class PCA9506
     {
         #region Member Variable
         II2CDevice dev;

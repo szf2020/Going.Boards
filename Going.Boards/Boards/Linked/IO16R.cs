@@ -24,9 +24,10 @@ namespace Going.Boards.Boards.Linked
         #region Constructor
         public IO16R()
         {
-            Hardwares = new IHardware[16];
-            for (int i = 0; i < 8; i++) Hardwares[i + 0] = new HardwareInput($"IN{i}");
-            for (int i = 0; i < 8; i++) Hardwares[i + 8] = new HardwareOutput($"OUT{i}");
+            var vs = new IHardware[16];
+            for (int i = 0; i < 8; i++) vs[i + 0] = new HardwareInput($"IN{i}");
+            for (int i = 0; i < 8; i++) vs[i + 8] = new HardwareOutput($"OUT{i}");
+            Hardwares = new HardwareList(vs);
 
             IN = new IGpioPin[8];
             OUT = new IGpioPin[8];

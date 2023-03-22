@@ -15,14 +15,13 @@ namespace RpiPLC
     {
         static void Main(string[] args)
         {
-            Pi.Init<BootstrapWiringPi>();
+            //Pi.Init<BootstrapWiringPi>();
 
             var plc = new GoingPLC();
             var bd = new OUT40T(0x21);
-            var dic = bd.Hardwares.ToDictionary(x => x.Name);
             for (int i = 0; i < 40; i++)
             {
-                dic[$"OUT{i}"].Address = $"P{i}";
+                bd.Hardwares[$"OUT{i}"].Address = $"P{i}";
             }
             plc.Shields.Add(bd);
             plc.Start();

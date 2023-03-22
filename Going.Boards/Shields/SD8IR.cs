@@ -24,9 +24,10 @@ namespace Going.Boards.Shields
         #region Constructor
         public SD8IR()
         {
-            Hardwares = new IHardware[8];
-            for (int i = 0; i < 4; i++) Hardwares[i + 0] = new HardwareInput($"IN{i}");
-            for (int i = 0; i < 4; i++) Hardwares[i + 4] = new HardwareOutput($"OUT{i}");
+            var vs = new IHardware[8];
+            for (int i = 0; i < 4; i++) vs[i + 0] = new HardwareInput($"IN{i}");
+            for (int i = 0; i < 4; i++) vs[i + 4] = new HardwareOutput($"OUT{i}");
+            Hardwares = new HardwareList(vs);
 
             IN = new IGpioPin[4];
             OUT = new IGpioPin[4];
