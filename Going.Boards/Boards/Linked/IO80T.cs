@@ -109,24 +109,26 @@ namespace Going.Boards.Boards.Linked
         {
             if (PLC != null && PLC.State == EngineState.RUN)
             {
+                
                 byte[] valuesI = new byte[5];
                 valuesI[0] = devI.ReadPort(PCA9506.Port.Port0);
                 valuesI[1] = devI.ReadPort(PCA9506.Port.Port1);
                 valuesI[2] = devI.ReadPort(PCA9506.Port.Port2);
                 valuesI[3] = devI.ReadPort(PCA9506.Port.Port3);
                 valuesI[4] = devI.ReadPort(PCA9506.Port.Port4);
-
+                
+                
                 for (int i = 0; i < 40; i++)
                 {
-                    var v = Hardwares[i + 40] as HardwareInput;
+                    var v = Hardwares[i] as HardwareInput;
 
                     var idx = i / 8;
                     var bit = i % 8;
 
                     v.Value = valuesI[idx].Bit(bit);
                 }
-
-
+                
+                
                 byte[] valuesO = new byte[5];
                 for (int i = 0; i < 40; i++)
                 {
@@ -143,6 +145,7 @@ namespace Going.Boards.Boards.Linked
                 devO.WritePort(PCA9506.Port.Port2, valuesO[2]);
                 devO.WritePort(PCA9506.Port.Port3, valuesO[3]);
                 devO.WritePort(PCA9506.Port.Port4, valuesO[4]);
+                
             }
         }
         #endregion

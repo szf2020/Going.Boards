@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,7 @@ namespace Going.Boards.Chips
         public void Setup()
         {
             WriteReg(Register.IOCON, 0b00100000);
-            WriteReg(Register.GPPU_A, 0xFF, 0xFF);
+            WriteReg(Register.GPPU_A, 0xFF, 0xFF);            
         }
         #endregion
         
@@ -91,15 +92,13 @@ namespace Going.Boards.Chips
         #region WriteReg
         void WriteReg(Register reg, byte value)
         {
-            dev.Write((byte)reg);
-            dev.Write(value);
+            dev.WriteAddressByte((byte)reg, value);
         }
 
         void WriteReg(Register reg, byte portA, byte portB)
         {
-            dev.Write((byte)reg);
-            dev.Write(portA);
-            dev.Write(portB);
+            dev.WriteAddressWord((byte)reg, Convert.ToUInt16((portA << 8) | portB));            
+            
         }
         #endregion
         #region ReadReg

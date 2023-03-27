@@ -9,40 +9,37 @@ using System.Threading.Tasks;
 
 namespace Going.Boards.Boards.Linked
 {
-    public class OUT40T : GoingBoard
+    public class OUT16R : GoingBoard
     {
         #region Member Variable
-        PCA9506 devO;
+        MCP23017 devO;
         byte DeviceID;
         #endregion
 
         #region Constructor
-        public OUT40T(byte DeviceID = 0x21)
+        public OUT16R(byte DeviceID = 0x21)
         {
             this.DeviceID = DeviceID;
 
-            var vs = new IHardware[40];
-            for (int i = 0; i < 40; i++) vs[i] = new HardwareOutput($"OUT{i}");
+            var vs = new IHardware[16];
+            for (int i = 0; i < 16; i++) vs[i] = new HardwareOutput($"OUT{i}");
             Hardwares = new HardwareList(vs);
         }
         #endregion
 
-        #region Override
+        #region Override 
         #region Begin
         public override void Begin()
         {
             if (PLC != null)
             {
-                devO = new PCA9506(DeviceID);
+                devO = new MCP23017(DeviceID);
 
                 devO.Setup();
-                devO.PortMode(PCA9506.Port.Port0, PCA9506.PinMode.OUTPUT);
-                devO.PortMode(PCA9506.Port.Port1, PCA9506.PinMode.OUTPUT);
-                devO.PortMode(PCA9506.Port.Port2, PCA9506.PinMode.OUTPUT);
-                devO.PortMode(PCA9506.Port.Port3, PCA9506.PinMode.OUTPUT);
-                devO.PortMode(PCA9506.Port.Port4, PCA9506.PinMode.OUTPUT);
+                devO.PortMode(MCP23017.Port.A, MCP23017.PinMode.OUTPUT);
+                devO.PortMode(MCP23017.Port.B, MCP23017.PinMode.OUTPUT);
 
-                Load();
+               //Load();
                 Out();
             }
         }
@@ -56,7 +53,7 @@ namespace Going.Boards.Boards.Linked
         #region Load
         public override void Load()
         {
- 
+
         }
         #endregion
         #region Out
@@ -64,7 +61,7 @@ namespace Going.Boards.Boards.Linked
         {
             if (PLC != null && PLC.State == EngineState.RUN)
             {
-                for (int i = 0; i < 40; i++)
+                for (int i = 0; i < 16; i++)
                 {
                     var v = Hardwares[i] as HardwareOutput;
 
@@ -84,8 +81,8 @@ namespace Going.Boards.Boards.Linked
         {
             if (PLC != null && PLC.State == EngineState.RUN)
             {
-                byte[] values = new byte[5];
-                for (int i = 0; i < 40; i++)
+                byte[] values = new byte[2];
+                for (int i = 0; i < 16; i++)
                 {
                     var v = Hardwares[i] as HardwareOutput;
 
@@ -95,11 +92,8 @@ namespace Going.Boards.Boards.Linked
                     values[idx].Bit(bit, v.Value);
                 }
 
-                devO.WritePort(PCA9506.Port.Port0, values[0]);
-                devO.WritePort(PCA9506.Port.Port1, values[1]);
-                devO.WritePort(PCA9506.Port.Port2, values[2]);
-                devO.WritePort(PCA9506.Port.Port3, values[3]);
-                devO.WritePort(PCA9506.Port.Port4, values[4]);                
+                devO.WritePort(MCP23017.Port.A, values[0]);
+                devO.WritePort(MCP23017.Port.B, values[1]);
             }
         }
         #endregion
