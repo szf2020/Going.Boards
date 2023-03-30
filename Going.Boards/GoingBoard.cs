@@ -95,6 +95,8 @@ namespace Going.Boards
 
         #region Properties
         public int Count => (vs != null ? vs.Length : 0);
+
+        public IEnumerable<string> Keys => (vs != null ? vs.Select(x => x.Name) : null);
         #endregion
 
         #region Member Variable
