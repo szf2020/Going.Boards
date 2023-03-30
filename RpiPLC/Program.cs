@@ -15,6 +15,8 @@ namespace RpiPLC
     {
         static void Main(string[] args)
         {
+            Console.WriteLine($"PATH:{AppDomain.CurrentDomain.BaseDirectory}");
+
             Pi.Init<BootstrapWiringPi>();
             var plc = new GoingPLC();
             #region Pi16R
@@ -80,8 +82,9 @@ namespace RpiPLC
             plc.Shields.Add(sd8r);
             */
             #endregion
+
             #region SD8IR
-            /*
+            
             var sd8ir = new SD8IR();
             for (int i = 0; i < 4; i++)
             {
@@ -89,10 +92,10 @@ namespace RpiPLC
                 sd8ir.Hardwares[$"OUT{i}"].Address = $"P{i+10}";
             }
             plc.Shields.Add(sd8ir);
-            */
+            
             #endregion
             #region LcdEX
-            
+            /*
             var lcd = new LcdEX();
             for (int i = 0; i < 4; i++)
             {
@@ -102,8 +105,11 @@ namespace RpiPLC
             {
                 lcd.Hardwares[$"OUT{i}"].Address = $"P{i + 10}";
             }
+
+            lcd.Hardwares[$"DAC0"].Address = $"D100";
+
             plc.Shields.Add(lcd);
-            
+            */
             #endregion
             plc.Start();
 

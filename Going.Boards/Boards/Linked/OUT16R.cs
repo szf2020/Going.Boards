@@ -80,7 +80,7 @@ namespace Going.Boards.Boards.Linked
         public override void Update()
         {
             if (PLC != null && PLC.State == EngineState.RUN)
-            {
+            {                
                 byte[] values = new byte[2];
                 for (int i = 0; i < 16; i++)
                 {
