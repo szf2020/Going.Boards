@@ -122,7 +122,7 @@ namespace RpiPLC
             #endregion
             #region ZPiIO8R
 
-            var Zero8r = new ZPiIO8R();
+            var Zero8r = new IO8R();
 
 
             for (int i = 0; i < 4; i++)

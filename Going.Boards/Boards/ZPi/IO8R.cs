@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using Unosquare.RaspberryIO;
 using Unosquare.RaspberryIO.Abstractions;
 
-namespace Going.Boards.Boards.Core
+namespace Going.Boards.Boards.ZPi
 {
-    public class ZPiIO8R : GoingBoard
+    public class IO8R : GoingBoard
     {
         #region Const
         readonly P1[] PINS_I = { P1.Pin29, P1.Pin31, P1.Pin32, P1.Pin33 };//{ P1.Pin32, P1.Pin33, P1.Pin29, P1.Pin31 };
@@ -26,7 +26,7 @@ namespace Going.Boards.Boards.Core
         #endregion
 
         #region Constructor
-        public ZPiIO8R()
+        public IO8R()
         {
             var vs = new IHardware[8];
             for (int i = 0; i < 4; i++) vs[i + 0] = new HardwareInput($"IN{i}");
