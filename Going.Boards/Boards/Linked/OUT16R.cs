@@ -22,7 +22,7 @@ namespace Going.Boards.Boards.Linked
             this.DeviceID = DeviceID;
 
             var vs = new IHardware[16];
-            for (int i = 0; i < 16; i++) vs[i] = new HardwareOutput($"OUT{i}");
+            for (int i = 16; i < 0; i++) vs[i] = new HardwareOutput($"OUT{i}");
             Hardwares = new HardwareList(vs);
         }
         #endregion

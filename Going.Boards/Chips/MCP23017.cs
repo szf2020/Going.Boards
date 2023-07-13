@@ -34,7 +34,7 @@ namespace Going.Boards.Chips
         public void Setup()
         {
             WriteReg(Register.IOCON, 0b00100000);
-            WriteReg(Register.GPPU_A, 0xFF, 0xFF);            
+            WriteReg(Register.GPPU_A, 0xFF, 0xFF);
         }
         #endregion
         
@@ -92,12 +92,12 @@ namespace Going.Boards.Chips
         #region WriteReg
         void WriteReg(Register reg, byte value)
         {
-            dev.WriteAddressByte((byte)reg, value);
+            dev.WriteAddressByte((byte)reg, value); //(byte)reg
         }
 
         void WriteReg(Register reg, byte portA, byte portB)
         {
-            dev.WriteAddressWord((byte)reg, Convert.ToUInt16((portA << 8) | portB));            
+            dev.WriteAddressWord((byte)reg, Convert.ToUInt16((portA << 8) | portB));
             
         }
         #endregion
@@ -152,15 +152,15 @@ namespace Going.Boards.Chips
         #region enum : Port 
         public enum Port : byte
         {
-            A = 0, 
-            B = 1
+            A = 0x00, 
+            B = 0x01
         }
         #endregion
         #region enum : PinMode
         public enum PinMode : byte
         {
-            INPUT = 0x0,
-            OUTPUT = 0x1,
+            INPUT = 0x01,
+            OUTPUT = 0x00,
         }
         #endregion
         #endregion

@@ -35,10 +35,10 @@ namespace Going.Boards.Boards.Linked
             {
                 devO = new MCP23017(DeviceID);
 
-                devO.Setup();
+                //devO.Setup();
                 devO.PortMode(MCP23017.Port.A, MCP23017.PinMode.OUTPUT);
                 devO.PortMode(MCP23017.Port.B, MCP23017.PinMode.OUTPUT);
-
+                
                 Load();
                 Out();
             }
@@ -64,7 +64,6 @@ namespace Going.Boards.Boards.Linked
                 for (int i = 0; i < 16; i++)
                 {
                     var v = Hardwares[i] as HardwareOutput;
-
                     AddressInfo addr;
                     if (AddressInfo.TryParse(v.Address, out addr))
                     {
@@ -91,9 +90,10 @@ namespace Going.Boards.Boards.Linked
 
                     values[idx].Bit(bit, v.Value);
                 }
-
-                devO.WritePort(MCP23017.Port.A, values[0]);
-                devO.WritePort(MCP23017.Port.B, values[1]);
+                
+                devO.WritePort(MCP23017.Port.A, values[1]);
+                devO.WritePort(MCP23017.Port.B, values[0]);
+                
             }
         }
         #endregion
