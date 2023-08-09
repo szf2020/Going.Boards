@@ -17,8 +17,9 @@
 
   <ItemGroup>
     <PackageReference Include="Devinno" Version="1.1.0.9" />
-    <PackageReference Include="Devinno.PLC" Version="1.0.0.6" />
+    <PackageReference Include="Devinno.PLC" Version="1.0.0.9" />
     <PackageReference Include="Devinno.PLC.Interface" Version="1.0.0" />
+    <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
     <PackageReference Include="Unosquare.Raspberry.Abstractions" Version="0.4.1">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>

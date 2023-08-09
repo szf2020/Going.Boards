@@ -1,11 +1,6 @@
 ﻿using Devinno.PLC.Ladder;
-using Devinno.Tools;
 using Going.Boards.Chips;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SSD1306.Fonts;
 using Unosquare.RaspberryIO;
 using Unosquare.RaspberryIO.Abstractions;
 
@@ -22,8 +17,9 @@ namespace Going.Boards.Boards.ZPi
         IGpioPin[] IN;
         IGpioPin[] OUT;
 
-        byte DeviceID;
         #endregion
+
+        Chips.SSD1306 display;
 
         #region Constructor
         public IO8R()
@@ -35,6 +31,7 @@ namespace Going.Boards.Boards.ZPi
 
             IN = new IGpioPin[4];
             OUT = new IGpioPin[4];
+            
         }
         #endregion
 
@@ -42,6 +39,12 @@ namespace Going.Boards.Boards.ZPi
         #region Begin
         public override void Begin()
         {
+            display = new Chips.SSD1306();
+            display.Init();
+            var dfont = new Tahmona12();
+            display.WriteLineBuff(dfont, "Hello World 123456", "Line 2 xxxx");
+            display.DisplayUpdate();
+
             if (PLC != null)
             {
                 for (int i = 0; i < 4; i++)

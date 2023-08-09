@@ -1,8 +1,10 @@
 ﻿using Going.Boards;
-using Going.Boards.Boards.Core;
 using Going.Boards.Boards.Linked;
 using Unosquare.RaspberryIO;
 using Unosquare.WiringPi;
+using Going.Boards.Boards.ETC;
+using Going.Boards.Boards.ZPi;
+using Going.Boards.Shields;
 
 namespace RpiPLC
 {
@@ -35,6 +37,7 @@ namespace RpiPLC
             */
             #endregion            
             #region IO80T
+            /*
             var Link80T = new IO80T(0x21, 0x25);
             for (int i = 0; i < 40; i++)
             {
@@ -42,7 +45,7 @@ namespace RpiPLC
                 Link80T.Hardwares[$"OUT{i}"].Address = $"P{i + 80}";                
             }
             plc.Shields.Add(Link80T);
-            
+            */
             #endregion
             #region OUT16CH
             /*
@@ -77,7 +80,7 @@ namespace RpiPLC
             */
             #endregion
             #region SD8IR            
-            /*
+            
             var sd8ir = new SD8IR();
             for (int i = 0; i < 4; i++)
             {
@@ -85,7 +88,7 @@ namespace RpiPLC
                 sd8ir.Hardwares[$"OUT{i}"].Address = $"P{i+10}";
             }
             plc.Shields.Add(sd8ir);
-            */
+            
             #endregion
             #region LcdEX
             /*
@@ -121,7 +124,7 @@ namespace RpiPLC
             */
             #endregion
             #region ZPiIO8R
-
+            /*
             var Zero8r = new IO8R();
 
 
@@ -136,7 +139,7 @@ namespace RpiPLC
             }
 
             plc.Shields.Add(Zero8r);
-
+            */
             #endregion
 
             plc.Start();
